@@ -1,122 +1,119 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <title>Formulario con MongoDB</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #f0f4f8;
-            margin: 0;
-            padding: 0;
-        }
-        .container {
-            background: white;
-            max-width: 500px;
-            margin: 50px auto;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-        }
-        h2 {
-            text-align: center;
-            color: #333;
-        }
-        label {
-            display: block;
-            margin-top: 15px;
-            color: #555;
-        }
-        input[type="text"],
-        input[type="email"],
-        input[type="number"],
-        textarea {
-            width: 100%;
-            padding: 10px;
-            margin-top: 5px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-        input[type="submit"] {
-            background: #28a745;
-            color: white;
-            padding: 10px 20px;
-            margin-top: 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        input[type="submit"]:hover {
-            background: #218838;
-        }
-    </style>
-    <!-- Firebase App (core) -->
-<script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js"></script>
-<!-- Firestore -->
-<script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js"></script>
+  <meta charset="UTF-8" />
+  <title>Formulario con Firestore</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0f4f8;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      background: white;
+      max-width: 500px;
+      margin: 50px auto;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    h2 {
+      text-align: center;
+      color: #333;
+    }
+    label {
+      display: block;
+      margin-top: 15px;
+      color: #555;
+    }
+    input[type="text"],
+    input[type="email"],
+    input[type="number"],
+    textarea {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    input[type="submit"] {
+      background: #28a745;
+      color: white;
+      padding: 10px 20px;
+      margin-top: 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    input[type="submit"]:hover {
+      background: #218838;
+    }
+  </style>
 
-<script>
+  <!-- Firebase v9 modular SDK -->
+  <script type="module">
+  // Importa desde los módulos ES
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
+  import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
+
   const firebaseConfig = {
-  apiKey: "AIzaSyAWdEj7XdAfjPGAWDLFURe5qgkrhh3ZeD0",
-  authDomain: "paginanube-7b9ca.firebaseapp.com",
-  projectId: "paginanube-7b9ca",
-  storageBucket: "paginanube-7b9ca.firebasestorage.app",
-  messagingSenderId: "633330825147",
-  appId: "1:633330825147:web:253825f92d45b33955f69e",
-  measurementId: "G-VCFWZ48V47"
-};
+    apiKey: "AIzaSyAWdEj7XdAfjPGAWDLFURe5qgkrhh3ZeD0",
+    authDomain: "paginanube-7b9ca.firebaseapp.com",
+    projectId: "paginanube-7b9ca",
+    storageBucket: "paginanube-7b9ca.firebasestorage.app",
+    messagingSenderId: "633330825147",
+    appId: "1:633330825147:web:253825f92d45b33955f69e",
+    measurementId: "G-VCFWZ48V47"
+  };
 
-  // Inicializa Firebase
-  const app = firebase.initializeApp(firebaseConfig);
-  const db = firebase.firestore();
-</script>
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
 
-</head>
-<body>
-    <div class="container">
-        <h2>Registro de Usuario</h2>
-        <form id="registro-form"method="post">
-            <label>Nombre completo:</label>
-            <input type="text" name="nombre" required>
-
-            <label>Email:</label>
-            <input type="email" name="email" required>
-
-            <label>Edad:</label>
-            <input type="number" name="edad" required>
-
-            <label>Dirección:</label>
-            <textarea name="direccion" rows="3" required></textarea>
-
-            <input type="submit" value="Guardar">
-        </form>
-    </div>
-    <script>
-  document.getElementById("registro-form").addEventListener("submit", function(e) {
-    e.preventDefault(); // Evita el envío clásico
+  document.getElementById("registro-form").addEventListener("submit", async function(e) {
+    e.preventDefault();
 
     const nombre = document.querySelector('input[name="nombre"]').value;
     const email = document.querySelector('input[name="email"]').value;
     const edad = parseInt(document.querySelector('input[name="edad"]').value);
     const direccion = document.querySelector('textarea[name="direccion"]').value;
 
-    db.collection("usuarios").add({
-      nombre: nombre,
-      email: email,
-      edad: edad,
-      direccion: direccion,
-      timestamp: new Date()
-    })
-    .then(() => {
+    try {
+      await addDoc(collection(db, "usuarios"), {
+        nombre,
+        email,
+        edad,
+        direccion,
+        timestamp: new Date()
+      });
       alert("Datos guardados correctamente.");
       document.getElementById("registro-form").reset();
-    })
-    .catch((error) => {
+    } catch (error) {
       console.error("Error al guardar: ", error);
-      alert("Ocurrió un error.");
-    });
+      alert("Ocurrió un error al guardar.");
+    }
   });
 </script>
 
+</head>
+<body>
+  <div class="container">
+    <h2>Registro de Usuario</h2>
+    <form id="registro-form">
+      <label>Nombre completo:</label>
+      <input type="text" name="nombre" required />
+
+      <label>Email:</label>
+      <input type="email" name="email" required />
+
+      <label>Edad:</label>
+      <input type="number" name="edad" required />
+
+      <label>Dirección:</label>
+      <textarea name="direccion" rows="3" required></textarea>
+
+      <input type="submit" value="Guardar" />
+    </form>
+  </div>
 </body>
 </html>
