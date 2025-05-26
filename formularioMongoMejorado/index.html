@@ -50,52 +50,6 @@
       background: #218838;
     }
   </style>
-
-  <!-- Firebase v9 modular SDK -->
-  <!-- Firebase modular (v9) desde CDN -->
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
-  import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
-
-  const firebaseConfig = {
-    apiKey: "AIzaSyAWdEj7XdAfjPGAWDLFURe5qgkrhh3ZeD0",
-    authDomain: "paginanube-7b9ca.firebaseapp.com",
-    projectId: "paginanube-7b9ca",
-    storageBucket: "paginanube-7b9ca.firebasestorage.app",
-    messagingSenderId: "633330825147",
-    appId: "1:633330825147:web:253825f92d45b33955f69e",
-    measurementId: "G-VCFWZ48V47"
-  };
-
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
-
-  document.getElementById("registro-form").addEventListener("submit", async function (e) {
-    e.preventDefault();
-
-    const nombre = document.querySelector('input[name="nombre"]').value;
-    const email = document.querySelector('input[name="email"]').value;
-    const edad = parseInt(document.querySelector('input[name="edad"]').value);
-    const direccion = document.querySelector('textarea[name="direccion"]').value;
-
-    try {
-      await addDoc(collection(db, "usuarios"), {
-        nombre,
-        email,
-        edad,
-        direccion,
-        timestamp: new Date()
-      });
-      alert("Datos guardados correctamente.");
-      document.getElementById("registro-form").reset();
-    } catch (error) {
-      console.error("Error al guardar:", error);
-      alert("No se pudo guardar. Mira la consola para detalles.");
-    }
-  });
-</script>
-
-
 </head>
 <body>
   <div class="container">
@@ -116,5 +70,48 @@
       <input type="submit" value="Guardar" />
     </form>
   </div>
+
+  <!-- Script de Firebase al final para asegurar que el DOM esté cargado -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
+    import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyAWdEj7XdAfjPGAWDLFURe5qgkrhh3ZeD0",
+      authDomain: "paginanube-7b9ca.firebaseapp.com",
+      projectId: "paginanube-7b9ca",
+      storageBucket: "paginanube-7b9ca.firebasestorage.app",
+      messagingSenderId: "633330825147",
+      appId: "1:633330825147:web:253825f92d45b33955f69e",
+      measurementId: "G-VCFWZ48V47"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    document.getElementById("registro-form").addEventListener("submit", async function (e) {
+      e.preventDefault();
+
+      const nombre = document.querySelector('input[name="nombre"]').value;
+      const email = document.querySelector('input[name="email"]').value;
+      const edad = parseInt(document.querySelector('input[name="edad"]').value);
+      const direccion = document.querySelector('textarea[name="direccion"]').value;
+
+      try {
+        await addDoc(collection(db, "usuarios"), {
+          nombre,
+          email,
+          edad,
+          direccion,
+          timestamp: new Date()
+        });
+        alert("Datos guardados correctamente.");
+        document.getElementById("registro-form").reset();
+      } catch (error) {
+        console.error("Error al guardar:", error);
+        alert("No se pudo guardar. Mira la consola para detalles.");
+      }
+    });
+  </script>
 </body>
 </html>
