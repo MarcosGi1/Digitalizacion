@@ -50,32 +50,11 @@
             background: #218838;
         }
     </style>
-    <!-- Firebase App (core) -->
-<script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js"></script>
-<!-- Firestore -->
-<script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js"></script>
-
-<script>
-  const firebaseConfig = {
-  apiKey: "AIzaSyAWdEj7XdAfjPGAWDLFURe5qgkrhh3ZeD0",
-  authDomain: "paginanube-7b9ca.firebaseapp.com",
-  projectId: "paginanube-7b9ca",
-  storageBucket: "paginanube-7b9ca.firebasestorage.app",
-  messagingSenderId: "633330825147",
-  appId: "1:633330825147:web:253825f92d45b33955f69e",
-  measurementId: "G-VCFWZ48V47"
-};
-
-  // Inicializa Firebase
-  const app = firebase.initializeApp(firebaseConfig);
-  const db = firebase.firestore();
-</script>
-
 </head>
 <body>
     <div class="container">
         <h2>Registro de Usuario</h2>
-        <form id="registro-form"method="post">
+        <form id="formulario">
             <label>Nombre completo:</label>
             <input type="text" name="nombre" required>
 
@@ -91,32 +70,33 @@
             <input type="submit" value="Guardar">
         </form>
     </div>
+
     <script>
-  document.getElementById("registro-form").addEventListener("submit", function(e) {
-    e.preventDefault(); // Evita el envío clásico
+    document.getElementById("formulario").addEventListener("submit", async function(e) {
+        e.preventDefault();
 
-    const nombre = document.querySelector('input[name="nombre"]').value;
-    const email = document.querySelector('input[name="email"]').value;
-    const edad = parseInt(document.querySelector('input[name="edad"]').value);
-    const direccion = document.querySelector('textarea[name="direccion"]').value;
+        const form = e.target;
+        const data = {
+            nombre: form.nombre.value,
+            email: form.email.value,
+            edad: form.edad.value,
+            direccion: form.direccion.value
+        };
 
-    db.collection("usuarios").add({
-      nombre: nombre,
-      email: email,
-      edad: edad,
-      direccion: direccion,
-      timestamp: new Date()
-    })
-    .then(() => {
-      alert("Datos guardados correctamente.");
-      document.getElementById("registro-form").reset();
-    })
-    .catch((error) => {
-      console.error("Error al guardar: ", error);
-      alert("Ocurrió un error.");
+        const res = await fetch("/api/guardar", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data)
+        });
+
+        const result = await res.json();
+        if (res.ok) {
+            alert("✅ Datos guardados correctamente. ID: " + result.id);
+            form.reset();
+        } else {
+            alert("❌ Error: " + result.error);
+        }
     });
-  });
-</script>
-
+    </script>
 </body>
 </html>
